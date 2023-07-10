@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "microsoft-azure-plugin"
+name = "microsoft_azure_source_eventhub"
 version = "0.1.0"
 description = ""
 authors = ["Ryan Faircloth <ryan@dss-i.com>"]

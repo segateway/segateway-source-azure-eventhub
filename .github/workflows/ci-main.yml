@@ -82,7 +82,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [runTests, meta]
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       #Yes we need code

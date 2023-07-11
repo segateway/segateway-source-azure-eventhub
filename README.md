@@ -7,4 +7,5 @@ docker run --name segway-az --rm -it \
     -e EVENT_HUB_CONN_STR="$EVENT_HUB_CONN_STR" -e EVENT_HUB_CONSUMER_GROUP="$EVENT_HUB_CONSUMER_GROUP" \
     -e LOGSCALE_PS_TOKEN=$LOGSCALE_PS_TOKEN  -e SYSLOG_ROUTER_SERVICE_NAME=172.16.5.4 \
     segway-az -det
+    
 ```

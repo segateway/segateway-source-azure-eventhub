@@ -16,7 +16,7 @@ jobs:
   meta:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
     outputs:
       dockerhub-publish: ${{ steps.dockerhub-publish.outputs.defined }}

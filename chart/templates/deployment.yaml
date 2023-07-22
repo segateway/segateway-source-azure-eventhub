@@ -33,7 +33,13 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
+          - name: SYSLOG_ROUTER_SERVICE_NAME
+            value: {{ .Values.nexthop.name }}
           - name: AZURE_STORAGE_CONN_STR
             valueFrom:        
               secretKeyRef:        

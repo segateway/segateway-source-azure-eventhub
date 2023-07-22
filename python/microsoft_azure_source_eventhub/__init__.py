@@ -15,9 +15,9 @@ from flatten_dict import flatten
 
 logger = Logger()
 
-BLOB_STORAGE_CONNECTION_STRING: str = os.environ["AZURE_STORAGE_CONN_STR"]
-BLOB_CONTAINER_NAME: str = os.environ["AZURE_STORAGE_CONTAINER"]
-EVENT_HUB_CONNECTION_STR: str = os.environ["EVENT_HUB_CONN_STR"]
+AZURE_STORAGE_CONN_STR: str = os.environ["AZURE_STORAGE_CONN_STR"]
+AZURE_STORAGE_CONTAINER: str = os.environ["AZURE_STORAGE_CONTAINER"]
+EVENT_HUB_CONN_STR: str = os.environ["EVENT_HUB_CONN_STR"]
 # EVENT_HUB_NAME = os.environ['EVENT_HUB_NAME']
 EVENT_HUB_CONSUMER_GROUP: str = os.environ["EVENT_HUB_CONSUMER_GROUP"]
 
@@ -31,9 +31,9 @@ class MicrosoftEventHubSource(LogSource):
         """Class init with options"""
 
         # logger.trace(options)
-        logger.trace(BLOB_STORAGE_CONNECTION_STRING)
-        logger.trace(BLOB_CONTAINER_NAME)
-        logger.trace(EVENT_HUB_CONNECTION_STR)
+        logger.trace(AZURE_STORAGE_CONN_STR)
+        logger.trace(AZURE_STORAGE_CONTAINER)
+        logger.trace(EVENT_HUB_CONN_STR)
         logger.trace(EVENT_HUB_CONSUMER_GROUP)
         return True
 
@@ -49,11 +49,11 @@ class MicrosoftEventHubSource(LogSource):
         """Do the work"""
         checkpoint_store: BlobCheckpointStore = (
             BlobCheckpointStore.from_connection_string(
-                BLOB_STORAGE_CONNECTION_STRING, BLOB_CONTAINER_NAME
+                AZURE_STORAGE_CONN_STR, AZURE_STORAGE_CONTAINER
             )
         )
         client: EventHubConsumerClient = EventHubConsumerClient.from_connection_string(
-            EVENT_HUB_CONNECTION_STR,
+            EVENT_HUB_CONN_STR,
             consumer_group=EVENT_HUB_CONSUMER_GROUP,
             checkpoint_store=checkpoint_store,
             check_case=True,

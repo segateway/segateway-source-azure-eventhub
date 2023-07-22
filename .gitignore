@@ -160,3 +160,4 @@ cython_debug/
 #.idea/
 
 !etc/syslog-ng/conf.d/plugin/lib/
+.values-test.yaml

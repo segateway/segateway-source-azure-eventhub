@@ -21,12 +21,35 @@
         [
             "@semantic-release/commit-analyzer",
             {
-                "preset": "conventionalcommits",
-                "presetConfig": "conventional-changelog-conventionalcommits"
+                "preset": "conventionalcommits"
             }
         ],
         "@semantic-release/release-notes-generator",
-        "@semantic-release/git",
-        "@semantic-release/github"
+        [
+            "@semantic-release/exec",
+            {
+                "prepareCmd": "./.github/workflows/scripts/prepareHelm.sh ${nextRelease.version}",
+                "publishCmd": "./.github/workflows/scripts/publishHelm.sh ${nextRelease.version}"
+            }
+        ],
+        [
+            "@semantic-release/git",
+            {
+                "assets": [
+                    "chart/Chart.yaml"
+                ],
+                "message": "chore(release): ${nextRelease.version}\n\n${nextRelease.notes}"
+            }
+        ],
+        [
+            "@semantic-release/github",
+            {
+                "assets": [
+                    {
+                        "path": "*.tgz"
+                    }
+                ]
+            }
+        ]
     ]
 }

@@ -33,20 +33,45 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.service.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
+          env:
+          - name: AZURE_STORAGE_CONN_STR
+            valueFrom:        
+              secretKeyRef:        
+                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
+                key: AZURE_STORAGE_CONN_STR
+          - name: AZURE_STORAGE_CONTAINER
+            valueFrom:        
+              secretKeyRef:        
+                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
+                key: AZURE_STORAGE_CONTAINER
+          - name: EVENT_HUB_CONN_STR
+            valueFrom:        
+              secretKeyRef:        
+                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
+                key: EVENT_HUB_CONN_STR
+          - name: EVENT_HUB_CONSUMER_GROUP
+            valueFrom:        
+              secretKeyRef:        
+                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
+                key: EVENT_HUB_CONSUMER_GROUP
+          
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - mountPath: /var/lib/syslog-ng/
+            name: cache-volume          
+      volumes:
+      - name: cache-volume
+        emptyDir:
+          sizeLimit: 10Mi                 
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

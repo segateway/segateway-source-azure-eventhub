@@ -60,6 +60,11 @@ spec:
               secretKeyRef:        
                 name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
                 key: EVENT_HUB_CONSUMER_GROUP
+          - name: EVENT_HUB_TRANSPORT_TYPE
+            valueFrom:        
+              secretKeyRef:        
+                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
+                key: EVENT_HUB_TRANSPORT_TYPE
           
           # livenessProbe:
           #   httpGet:

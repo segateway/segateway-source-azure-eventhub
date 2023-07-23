@@ -6,7 +6,7 @@ from syslogng import Logger
 import asyncio
 
 import os
-from azure.eventhub import PartitionContext, EventData
+from azure.eventhub import PartitionContext, EventData, TransportType
 from azure.eventhub.aio import EventHubConsumerClient
 from azure.eventhub.extensions.checkpointstoreblobaio import (
     BlobCheckpointStore,
@@ -20,8 +20,13 @@ AZURE_STORAGE_CONTAINER: str = os.environ["AZURE_STORAGE_CONTAINER"]
 EVENT_HUB_CONN_STR: str = os.environ["EVENT_HUB_CONN_STR"]
 # EVENT_HUB_NAME = os.environ['EVENT_HUB_NAME']
 EVENT_HUB_CONSUMER_GROUP: str = os.environ["EVENT_HUB_CONSUMER_GROUP"]
+EVENT_HUB_TRANSPORT_TYPE: str = os.environ.get("EVENT_HUB_TRANSPORT_TYPE","default").upper()
 
-
+transportType = TransportType.Amqp
+if EVENT_HUB_TRANSPORT_TYPE == "AmqpOverWebsocket".upper():
+    transportType =  TransportType.AmqpOverWebsocket
+    
+    
 class MicrosoftEventHubSource(LogSource):
     """Provides a syslog-ng async source for Microsoft Event hub"""
 
@@ -56,6 +61,7 @@ class MicrosoftEventHubSource(LogSource):
             EVENT_HUB_CONN_STR,
             consumer_group=EVENT_HUB_CONSUMER_GROUP,
             checkpoint_store=checkpoint_store,
+            transport_type=transportType,           
             check_case=True,
         )
         async with client:

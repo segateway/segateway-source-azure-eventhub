@@ -69,6 +69,8 @@ spec:
             value: {{ .Values.config.data.vendor }}
           - name: SEGWAY_SOURCE_PRODUCT
             value: {{ .Values.config.data.product }}
+          - name: SEGWAY_APP_PARSER
+            value:  {{ .Values.config.data.appparser }}
           
           # livenessProbe:
           #   httpGet:

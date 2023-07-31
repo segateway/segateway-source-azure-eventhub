@@ -21,6 +21,7 @@ EVENT_HUB_CONN_STR: str = os.environ["EVENT_HUB_CONN_STR"]
 # EVENT_HUB_NAME = os.environ['EVENT_HUB_NAME']
 EVENT_HUB_CONSUMER_GROUP: str = os.environ["EVENT_HUB_CONSUMER_GROUP"]
 EVENT_HUB_TRANSPORT_TYPE: str = os.environ.get("EVENT_HUB_TRANSPORT_TYPE","default").upper()
+EVENT_HUB_STARTING_POSITION: str = os.environ.get("EVENT_HUB_STARTING_POSITION","-1").upper()
 
 transportType = TransportType.Amqp
 if EVENT_HUB_TRANSPORT_TYPE == "AmqpOverWebsocket".upper():

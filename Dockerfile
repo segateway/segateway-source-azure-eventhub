@@ -1,8 +1,24 @@
-FROM ghcr.io/seg-way/containers/segway-connect-system-base-source:1.2.4
+ARG REGISTRY=ghcr.io/seg-way/containers/segway-connect-system-base-source
+ARG BASEVERSION=2.0.0
+FROM $REGISTRY:$BASEVERSION as builder
 
-COPY etc/syslog-ng/conf.d/plugin /etc/syslog-ng/conf.d/plugin
+
+RUN apk add -U --upgrade --no-cache \
+    python3-dev \
+    libffi-dev
 
 COPY python /app/plugin
-RUN . /app/.venv/bin/activate ;\
-    pushd /app/plugin ;\
-    poetry install
+
+RUN python3 -m venv /app/.venv ;\
+    . /app/.venv/bin/activate ;\
+    cd /app/plugin;\
+    poetry install --no-dev -n
+
+FROM $REGISTRY:$BASEVERSION
+
+ENV VIRTUAL_ENV=/app/.venv
+COPY --from=builder /app/.venv /app/.venv
+COPY etc/syslog-ng/conf.d/plugin /etc/syslog-ng/conf.d/plugin
+
+COPY python/microsoft_azure_source_eventhub /etc/syslog-ng/python/microsoft_azure_source_eventhub
+USER ${uid}:${gid}

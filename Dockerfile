@@ -1,6 +1,6 @@
 ARG REGISTRY=ghcr.io/seg-way/containers/segway-connect-system-base-source
-ARG VERSION=2.0.0-next-major.1
-FROM $REGISTRY:$VERSION as builder
+ARG BASEVERSION=2.0.0-next-major.1
+FROM $REGISTRY:$BASEVERSION as builder
 
 
 RUN apk add -U --upgrade --no-cache \
@@ -14,11 +14,11 @@ RUN python3 -m venv /app/.venv ;\
     cd /app/plugin;\
     poetry install --no-dev -n
 
-FROM $REGISTRY:$VERSION
+FROM $REGISTRY:$BASEVERSION
 
 ENV VIRTUAL_ENV=/app/.venv
 COPY --from=builder /app/.venv /app/.venv
 COPY etc/syslog-ng/conf.d/plugin /etc/syslog-ng/conf.d/plugin
 
 COPY python/microsoft_azure_source_eventhub /etc/syslog-ng/python/microsoft_azure_source_eventhub
-# USER ${uid}:${gid}
+USER ${uid}:${gid}

@@ -61,6 +61,7 @@ class MicrosoftEventHubSource(LogSource):
         client: EventHubConsumerClient = EventHubConsumerClient.from_connection_string(
             EVENT_HUB_CONN_STR,
             consumer_group=EVENT_HUB_CONSUMER_GROUP,
+            
             checkpoint_store=checkpoint_store,
             transport_type=transportType,           
             check_case=True,

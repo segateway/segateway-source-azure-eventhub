@@ -1,5 +1,5 @@
 ARG REGISTRY=ghcr.io/seg-way/containers/segway-connect-system-base-source
-ARG BASEVERSION=2.0.0-next-major.1
+ARG BASEVERSION=2.0.0
 FROM $REGISTRY:$BASEVERSION as builder
 
 

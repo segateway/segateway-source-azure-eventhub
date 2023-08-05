@@ -1,8 +1,14 @@
 ARG REGISTRY=ghcr.io/seg-way/containers/segway-connect-system-base-source
-ARG VERSION=1.2.4
+ARG VERSION=2.0.0-next-major.1
 FROM $REGISTRY:$VERSION as builder
 
+
+RUN apk add -U --upgrade --no-cache \
+    python3-dev \
+    libffi-dev
+
 COPY python /app/plugin
+
 RUN python3 -m venv /app/.venv ;\
     . /app/.venv/bin/activate ;\
     cd /app/plugin;\

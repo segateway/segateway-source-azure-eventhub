@@ -30,3 +30,4 @@ spec:
         unprocessedEventThreshold: '64'
         activationUnprocessedEventThreshold: '10'
         blobContainer:  {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}
+{{- end }}

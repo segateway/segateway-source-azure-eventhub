@@ -75,7 +75,8 @@ tolerations: []
 
 affinity: {}
 
-
+keda:
+  enabled: false
 config:
   # to start from the end use "@latest" after data is streaming revert to -1 to avoid gaps during restarts
   # and upgrade

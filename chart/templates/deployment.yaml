@@ -46,20 +46,14 @@ spec:
                 name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
                 key: AZURE_STORAGE_CONN_STR
           - name: AZURE_STORAGE_CONTAINER
-            valueFrom:        
-              secretKeyRef:        
-                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
-                key: AZURE_STORAGE_CONTAINER
+            value: {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}       
           - name: EVENT_HUB_CONN_STR
             valueFrom:        
               secretKeyRef:        
                 name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
                 key: EVENT_HUB_CONN_STR
           - name: EVENT_HUB_CONSUMER_GROUP
-            valueFrom:        
-              secretKeyRef:        
-                name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
-                key: EVENT_HUB_CONSUMER_GROUP
+            value: {{ .Values.secret.data.EVENT_HUB_CONSUMER_GROUP }}
           - name: EVENT_HUB_TRANSPORT_TYPE
             valueFrom:        
               secretKeyRef:        

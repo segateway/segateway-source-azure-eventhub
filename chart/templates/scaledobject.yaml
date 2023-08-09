@@ -25,6 +25,7 @@ spec:
       metadata:
         connectionFromEnv: EVENT_HUB_CONN_STR
         storageConnectionFromEnv: AZURE_STORAGE_CONN_STR
+        checkpointStrategy: blobMetadata
         consumerGroup: {{ .Values.secret.data.EVENT_HUB_CONSUMER_GROUP }}
         unprocessedEventThreshold: '64'
         activationUnprocessedEventThreshold: '10'

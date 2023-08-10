@@ -1,10 +1,12 @@
-{{- if .Values.keda.enabled }}
+{{- if .Values.autoscaling.keda }}
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}
   labels:
     {{- include "segway-sys-source-ms-azure-eventhub.labels" . | nindent 4 }}
+  annotations:
+    scaledobject.keda.sh/transfer-hpa-ownership: "true" 
 spec:
   scaleTargetRef:
     name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}                # Mandatory. Must be in the same namespace as the ScaledObject

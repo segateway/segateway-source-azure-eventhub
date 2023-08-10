@@ -62,9 +62,10 @@ resources:
   #   memory: 128Mi
 
 autoscaling:
+  keda: false
   enabled: false
   minReplicas: 1
-  maxReplicas: 100
+  maxReplicas: 32
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
@@ -74,8 +75,6 @@ tolerations: []
 
 affinity: {}
 
-keda:
-  enabled: false
 config:
   # to start from the end use "@latest" after data is streaming revert to -1 to avoid gaps during restarts
   # and upgrade

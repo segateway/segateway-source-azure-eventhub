@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "segway-sys-source-ms-azure-eventhub.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
+  {{- if not (or .Values.autoscaling.enabled .Values.autoscaling.keda )}}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:

@@ -29,6 +29,6 @@ spec:
       checkpointStrategy: blobMetadata
       consumerGroup: {{ .Values.secret.data.EVENT_HUB_CONSUMER_GROUP }}
       unprocessedEventThreshold: '2000'
-      activationUnprocessedEventThreshold: '10'
+      activationUnprocessedEventThreshold: '1'
       blobContainer:  {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}
 {{- end }}

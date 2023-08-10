@@ -1,0 +1,45 @@
+{{- if .Values.autoscaling.keda }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}
+  labels:
+    {{- include "segway-sys-source-ms-azure-eventhub.labels" . | nindent 4 }}
+  annotations:
+    scaledobject.keda.sh/transfer-hpa-ownership: "true" 
+spec:
+  scaleTargetRef:
+    name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}                # Mandatory. Must be in the same namespace as the ScaledObject
+  pollingInterval:  60                                      # Optional. Default: 30 seconds
+  cooldownPeriod:   300                                     # Optional. Default: 300 seconds
+  maxReplicaCount:  32                                     # Optional. Default: 100
+  advanced:                                                 # Optional. Section to specify advanced options
+    horizontalPodAutoscalerConfig:                          # Optional. Section to specify HPA related options
+      name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }} 
+      behavior:                                             # Optional. Use to modify HPA's scaling behavior
+        scaleDown:
+          stabilizationWindowSeconds: 300
+          policies:
+          - type: Percent
+            value: 100
+            periodSeconds: 15
+  triggers:
+  - type: azure-eventhub
+    metadata:
+      connectionFromEnv: EVENT_HUB_CONN_STR
+      storageConnectionFromEnv: AZURE_STORAGE_CONN_STR
+      checkpointStrategy: blobMetadata
+      consumerGroup: {{ .Values.secret.data.EVENT_HUB_CONSUMER_GROUP }}
+      unprocessedEventThreshold: '2000'
+      activationUnprocessedEventThreshold: '1'
+      blobContainer:  {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}
+  {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}      
+  - type: cpu
+    metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+    metadata:
+      value: {{ .Values.autoscaling.targetCPUUtilizationPercentage | quote }}
+      {{- if ge (int .Capabilities.KubeVersion.Minor) 27 }}      
+      containerName: {{ .Chart.Name }}
+      {{- end }}      
+  {{- end }}      
+{{- end }}

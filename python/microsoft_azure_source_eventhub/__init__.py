@@ -70,8 +70,6 @@ class MicrosoftEventHubSource(LogSource):
             while not self.cancelled:
                 await client.receive_batch(
                     on_event_batch=self.on_event_batch,
-                    max_batch_size=200,
-                    prefetch=500,
                     max_wait_time=10,
                     starting_position="-1",  # "-1" is from the beginning of the partition.
                     track_last_enqueued_event_properties=True,

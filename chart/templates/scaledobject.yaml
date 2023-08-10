@@ -38,7 +38,7 @@ spec:
     metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
     metadata:
       value: {{ .Values.autoscaling.targetCPUUtilizationPercentage | quote }}
-      {{- if ge .Capabilities.KubeVersion.Minor 27 }}      
+      {{- if ge (int .Capabilities.KubeVersion.Minor) 27 }}      
       containerName: {{ .Chart.Name }}
       {{- end }}      
   {{- end }}      

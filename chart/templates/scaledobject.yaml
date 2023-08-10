@@ -37,7 +37,6 @@ spec:
   - type: cpu
     metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
     metadata:
-      type: Utilization # Deprecated in favor of trigger.metricType; allowed types are 'Utilization' or 'AverageValue'
       value: {{ .Values.autoscaling.targetCPUUtilizationPercentage | quote }}
       containerName: {{ .Chart.Name }}
   {{- end }}      

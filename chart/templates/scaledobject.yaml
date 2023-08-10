@@ -15,7 +15,7 @@ spec:
   maxReplicaCount:  32                                     # Optional. Default: 100
   advanced:                                                 # Optional. Section to specify advanced options
     horizontalPodAutoscalerConfig:                          # Optional. Section to specify HPA related options
-      name: keda-{{ include "segway-sys-source-ms-azure-eventhub.fullname" . }} 
+      name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }} 
       behavior:                                             # Optional. Use to modify HPA's scaling behavior
         scaleDown:
           stabilizationWindowSeconds: 300

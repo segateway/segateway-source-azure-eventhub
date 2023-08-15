@@ -12,7 +12,7 @@ spec:
     name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}                # Mandatory. Must be in the same namespace as the ScaledObject
   pollingInterval:  60                                      # Optional. Default: 30 seconds
   cooldownPeriod:   300                                     # Optional. Default: 300 seconds
-  maxReplicaCount:  32                                     # Optional. Default: 100
+  maxReplicaCount:  {{ .Values.autoscaling.maxReplicas }}                                     # Optional. Default: 100
   advanced:                                                 # Optional. Section to specify advanced options
     horizontalPodAutoscalerConfig:                          # Optional. Section to specify HPA related options
       name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }} 

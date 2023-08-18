@@ -66,7 +66,7 @@ spec:
           - name: EVENT_HUB_STARTING_POSITION
             value: {{ .Values.config.startingPostion | default "-1" | quote }}
           {{- if .Values.secret.data.EVENT_HUB_CUSTOM_ENDPOINT }}
-          - name: AZURE_STORAGE_CUSTOM_ENDPOINT
+          - name: EVENT_HUB_CUSTOM_ENDPOINT
             value: {{ .Values.secret.data.EVENT_HUB_CUSTOM_ENDPOINT }}
           {{- end }}
           - name: SEGWAY_SOURCE_VENDOR

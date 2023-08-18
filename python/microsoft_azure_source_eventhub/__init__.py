@@ -17,12 +17,13 @@ logger = Logger()
 
 AZURE_STORAGE_CONN_STR: str = os.environ["AZURE_STORAGE_CONN_STR"]
 AZURE_STORAGE_CONTAINER: str = os.environ["AZURE_STORAGE_CONTAINER"]
+AZURE_STORAGE_CUSTOM_ENDPOINT: str = os.environ.get("AZURE_STORAGE_CUSTOM_ENDPOINT",None)
 EVENT_HUB_CONN_STR: str = os.environ["EVENT_HUB_CONN_STR"]
 # EVENT_HUB_NAME = os.environ['EVENT_HUB_NAME']
 EVENT_HUB_CONSUMER_GROUP: str = os.environ["EVENT_HUB_CONSUMER_GROUP"]
 EVENT_HUB_TRANSPORT_TYPE: str = os.environ.get("EVENT_HUB_TRANSPORT_TYPE","default").upper()
 EVENT_HUB_STARTING_POSITION: str = os.environ.get("EVENT_HUB_STARTING_POSITION","-1").upper()
-
+EVENT_HUB_CUSTOM_ENDPOINT: str = os.environ.get("EVENT_HUB_CUSTOM_ENDPOINT",None)
 transportType = TransportType.Amqp
 if EVENT_HUB_TRANSPORT_TYPE == "AmqpOverWebsocket".upper():
     transportType =  TransportType.AmqpOverWebsocket
@@ -53,18 +54,25 @@ class MicrosoftEventHubSource(LogSource):
 
     async def receive_batch(self):
         """Do the work"""
+        blobCheckpointStoreOptions = {}
+        if AZURE_STORAGE_CUSTOM_ENDPOINT:
+            blobCheckpointStoreOptions['secondary_hostname']=AZURE_STORAGE_CUSTOM_ENDPOINT
         checkpoint_store: BlobCheckpointStore = (
             BlobCheckpointStore.from_connection_string(
-                AZURE_STORAGE_CONN_STR, AZURE_STORAGE_CONTAINER
+                AZURE_STORAGE_CONN_STR, AZURE_STORAGE_CONTAINER, **blobCheckpointStoreOptions
             )
         )
+        eventHubConsumerOptions = {
+            "consumer_group": EVENT_HUB_CONSUMER_GROUP,            
+            "checkpoint_store": checkpoint_store,
+            "transport_type": transportType,           
+            "check_case": True
+        }
+        if EVENT_HUB_CUSTOM_ENDPOINT:
+            eventHubConsumerOptions['custom_endpoint_address']=EVENT_HUB_CUSTOM_ENDPOINT
         client: EventHubConsumerClient = EventHubConsumerClient.from_connection_string(
             EVENT_HUB_CONN_STR,
-            consumer_group=EVENT_HUB_CONSUMER_GROUP,
-            
-            checkpoint_store=checkpoint_store,
-            transport_type=transportType,           
-            check_case=True,
+            **eventHubConsumerOptions
         )
         async with client:
             while not self.cancelled:

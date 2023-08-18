@@ -45,6 +45,10 @@ spec:
               secretKeyRef:        
                 name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
                 key: AZURE_STORAGE_CONN_STR
+          {{- if .Values.secret.data.AZURE_STORAGE_CUSTOM_ENDPOINT }}
+          - name: AZURE_STORAGE_CUSTOM_ENDPOINT
+            value: {{ .Values.secret.data.AZURE_STORAGE_CUSTOM_ENDPOINT }}
+          {{- end }}
           - name: AZURE_STORAGE_CONTAINER
             value: {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}       
           - name: EVENT_HUB_CONN_STR
@@ -58,10 +62,13 @@ spec:
             valueFrom:        
               secretKeyRef:        
                 name: {{ include "segway-sys-source-ms-azure-eventhub.secretname" . }}
-                key: EVENT_HUB_TRANSPORT_TYPE
-                
+                key: EVENT_HUB_TRANSPORT_TYPE                
           - name: EVENT_HUB_STARTING_POSITION
             value: {{ .Values.config.startingPostion | default "-1" | quote }}
+          {{- if .Values.secret.data.EVENT_HUB_CUSTOM_ENDPOINT }}
+          - name: EVENT_HUB_CUSTOM_ENDPOINT
+            value: {{ .Values.secret.data.EVENT_HUB_CUSTOM_ENDPOINT }}
+          {{- end }}
           - name: SEGWAY_SOURCE_VENDOR
             value: {{ .Values.config.data.vendor }}
           - name: SEGWAY_SOURCE_PRODUCT

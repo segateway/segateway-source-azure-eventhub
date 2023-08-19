@@ -30,8 +30,8 @@ spec:
       storageConnectionFromEnv: AZURE_STORAGE_CONN_STR
       checkpointStrategy: blobMetadata
       consumerGroup: {{ .Values.secret.data.EVENT_HUB_CONSUMER_GROUP }}
-      unprocessedEventThreshold: '2000'
-      activationUnprocessedEventThreshold: '1'
+      unprocessedEventThreshold: {{ .Values.autoscaling.unprocessedEventThreshold | default "2000" | quote }}
+      activationUnprocessedEventThreshold: {{ .Values.autoscaling.activationUnprocessedEventThreshold | default "1" | quote }}
       blobContainer:  {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}
   {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}      
   - type: cpu

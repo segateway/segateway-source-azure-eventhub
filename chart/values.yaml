@@ -32,11 +32,10 @@ secret:
   # If not set and create is true, a name is generated using the fullname template
   data:
     AZURE_STORAGE_CONN_STR: ""
-    AZURE_STORAGE_CUSTOM_ENDPOINT: 
     AZURE_STORAGE_CONTAINER: ""
     EVENT_HUB_CONN_STR: ""
     EVENT_HUB_CONSUMER_GROUP: ""
-    EVENT_HUB_CUSTOM_ENDPOINT: 
+
 podAnnotations: {}
 
 podSecurityContext:

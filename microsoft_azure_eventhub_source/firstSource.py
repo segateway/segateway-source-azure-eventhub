@@ -1,17 +1,11 @@
-import orjson
-import time
-from syslogng import LogSource
-from syslogng import LogMessage
-from syslogng import Logger
 import asyncio
-
 import os
-from azure.eventhub import PartitionContext, EventData, TransportType
+
+import orjson
+from azure.eventhub import EventData, PartitionContext, TransportType
 from azure.eventhub.aio import EventHubConsumerClient
-from azure.eventhub.extensions.checkpointstoreblobaio import (
-    BlobCheckpointStore,
-)
-from flatten_dict import flatten
+from azure.eventhub.extensions.checkpointstoreblobaio import BlobCheckpointStore
+from syslogng import Logger, LogMessage, LogSource
 
 logger = Logger()
 
@@ -20,14 +14,18 @@ AZURE_STORAGE_CONTAINER: str = os.environ["AZURE_STORAGE_CONTAINER"]
 EVENT_HUB_CONN_STR: str = os.environ["EVENT_HUB_CONN_STR"]
 # EVENT_HUB_NAME = os.environ['EVENT_HUB_NAME']
 EVENT_HUB_CONSUMER_GROUP: str = os.environ["EVENT_HUB_CONSUMER_GROUP"]
-EVENT_HUB_TRANSPORT_TYPE: str = os.environ.get("EVENT_HUB_TRANSPORT_TYPE","default").upper()
-EVENT_HUB_STARTING_POSITION: str = os.environ.get("EVENT_HUB_STARTING_POSITION","-1").upper()
+EVENT_HUB_TRANSPORT_TYPE: str = os.environ.get(
+    "EVENT_HUB_TRANSPORT_TYPE", "default"
+).upper()
+EVENT_HUB_STARTING_POSITION: str = os.environ.get(
+    "EVENT_HUB_STARTING_POSITION", "-1"
+).upper()
 
 transportType = TransportType.Amqp
 if EVENT_HUB_TRANSPORT_TYPE == "AmqpOverWebsocket".upper():
-    transportType =  TransportType.AmqpOverWebsocket
-    
-    
+    transportType = TransportType.AmqpOverWebsocket
+
+
 class MicrosoftEventHubSource(LogSource):
     """Provides a syslog-ng async source for Microsoft Event hub"""
 
@@ -61,9 +59,8 @@ class MicrosoftEventHubSource(LogSource):
         client: EventHubConsumerClient = EventHubConsumerClient.from_connection_string(
             EVENT_HUB_CONN_STR,
             consumer_group=EVENT_HUB_CONSUMER_GROUP,
-            
             checkpoint_store=checkpoint_store,
-            transport_type=transportType,           
+            transport_type=transportType,
             check_case=True,
         )
         async with client:
@@ -88,15 +85,16 @@ class MicrosoftEventHubSource(LogSource):
             for event in event_batch:
                 event_str = event.body_as_str(encoding="UTF-8")
                 event_obj = orjson.loads(event_str)
-                logger.debug(f'ehs: Record count {len(event_obj["records"])}')            
+                logger.debug(f'ehs: Record count {len(event_obj["records"])}')
                 if "records" in event_obj:
                     for record in event_obj["records"]:
-
                         MicrosoftEventHubSource.clean_event(record)
                         message = orjson.dumps(record)
 
                         record_lmsg = LogMessage(message)
-                        record_lmsg[".internal.enqueued_time"] = event.enqueued_time.isoformat()
+                        record_lmsg[
+                            ".internal.enqueued_time"
+                        ] = event.enqueued_time.isoformat()
 
                         self.post_message(record_lmsg)
                 else:
@@ -104,9 +102,8 @@ class MicrosoftEventHubSource(LogSource):
                     message = orjson.dumps(event_obj)
                     record_lmsg = LogMessage(message)
                     self.post_message(record_lmsg)
-        except Exception as argument:            
+        except Exception as argument:
             logger.error(argument)
-
 
     async def on_event_batch(
         self, partition_context: PartitionContext, event_batch: EventData

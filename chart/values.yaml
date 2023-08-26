@@ -30,11 +30,7 @@ secret:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  data:
-    AZURE_STORAGE_CONN_STR: ""
-    AZURE_STORAGE_CONTAINER: ""
-    EVENT_HUB_CONN_STR: ""
-    EVENT_HUB_CONSUMER_GROUP: ""
+  data: {}
 
 podAnnotations: {}
 

@@ -13,7 +13,7 @@ from pythonjsonlogger import jsonlogger
 from microsoft_azure_eventhub_source._CleanEvent import CleanEvent
 
 try:
-    from syslogng import LogMessage, LogSource, Persist
+    from syslogng import LogMessage, LogSource
 
     syslogng = True
 except ImportError:
@@ -96,9 +96,6 @@ class LogSourcePlugin(LogSource):
         logger.info(AZURE_STORAGE_CONTAINER)
         logger.info(EVENT_HUB_CONN_STR)
         logger.info(EVENT_HUB_CONSUMER_GROUP)
-
-        if syslogng:
-            self.persist = Persist(f"mimecast_{self._TYPE}", defaults={"nextPage": ""})
 
         return True
 

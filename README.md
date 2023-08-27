@@ -1,4 +1,4 @@
-# segway-eventhub
+# segateway-eventhub
 
 ```bash
 docker build -t segway-az . ;\

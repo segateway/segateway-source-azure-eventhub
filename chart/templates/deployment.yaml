@@ -78,20 +78,6 @@ spec:
           volumeMounts:
           - mountPath: /var/lib/syslog-ng/
             name: cache-volume
-          topologySpreadConstraints:
-          - maxSkew: 1
-            topologyKey: topology.kubernetes.io/zone
-            whenUnsatisfiable: DoNotSchedule
-            matchLabelKeys:
-              - pod-template-hash
-          - maxSkew: 1
-            topologyKey: kubernetes.io/hostname
-            whenUnsatisfiable: ScheduleAnyway
-            matchLabelKeys:
-              - pod-template-hash
-          {{- with .Values.topologySpreadConstraints }}
-            {{- toYaml . | nindent 10 }}
-          {{- end }}
       volumes:
       - name: cache-volume
         emptyDir:
@@ -106,5 +92,19 @@ spec:
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          matchLabelKeys:
+            - pod-template-hash
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          matchLabelKeys:
+            - pod-template-hash
+      {{- with .Values.topologySpreadConstraints }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

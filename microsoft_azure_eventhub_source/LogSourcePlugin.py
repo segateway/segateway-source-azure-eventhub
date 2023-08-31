@@ -47,7 +47,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
 
 # logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 logHandler = logging.StreamHandler()
 formatter = CustomJsonFormatter()
@@ -129,18 +129,15 @@ class LogSourcePlugin(LogSource):
         )
         logger.info("client connected")
         async with client:
-            while not self._cancelled:
-                logger.info("waiting on batch")
-                await client.receive_batch(
-                    on_event_batch=self.on_event_batch,
-                    max_wait_time=10,
-                    starting_position="-1",  # "-1" is from the beginning of the partition.
-                    max_batch_size=300,
-                    prefetch=1000,
-                    track_last_enqueued_event_properties=True,
-                )
-            logger.info("ehs: run will sleep")
-            await asyncio.sleep(1)
+            logger.info("waiting on batch")
+            await client.receive_batch(
+                on_event_batch=self.on_event_batch,
+                max_wait_time=5,
+                starting_position="-1",  # "-1" is from the beginning of the partition.
+                max_batch_size=300,
+                prefetch=1000,
+                track_last_enqueued_event_properties=True,
+            )
 
     async def on_event_batch(
         self, partition_context: PartitionContext, event_batch: EventData
@@ -173,10 +170,11 @@ class LogSourcePlugin(LogSource):
                         self.post_message(record_lmsg)
                     else:
                         logger.debug(event_obj)
+
         except Exception as argument:
             logger.exception(argument)
-        # exit(0)
-        await partition_context.update_checkpoint()
+        if len(event_batch) > 0:
+            await partition_context.update_checkpoint()
 
 
 def main():

@@ -135,6 +135,8 @@ class LogSourcePlugin(LogSource):
                     on_event_batch=self.on_event_batch,
                     max_wait_time=10,
                     starting_position="-1",  # "-1" is from the beginning of the partition.
+                    max_batch_size=300,
+                    prefetch=1000,
                     track_last_enqueued_event_properties=True,
                 )
             logger.info("ehs: run will sleep")

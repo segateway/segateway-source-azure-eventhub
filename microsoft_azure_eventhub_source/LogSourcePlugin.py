@@ -2,9 +2,11 @@ import asyncio
 import logging
 import os
 from datetime import datetime
+import backoff
 
 import orjson
 from azure.eventhub import EventData, PartitionContext, TransportType
+from azure.eventhub.exceptions import EventHubError
 from azure.eventhub.aio import EventHubConsumerClient
 from azure.eventhub.extensions.checkpointstoreblobaio import BlobCheckpointStore
 from dotenv import load_dotenv
@@ -111,6 +113,8 @@ class LogSourcePlugin(LogSource):
         logger.info("Exit called by syslog-ng")
         self._cancelled = True
 
+    @backoff.on_exception(backoff.expo,
+                      EventHubError)
     async def run_async(self):
         """Actual start of process"""
 

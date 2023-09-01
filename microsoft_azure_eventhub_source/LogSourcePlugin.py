@@ -172,14 +172,14 @@ class LogSourcePlugin(LogSource):
                                 record, delimiter="."
                             ).items():
                                 if field_key not in ("time"):
-                                    # try:
-                                    single_event[f".Vendor.{field_key}"] = str(
-                                        field_value
-                                    )
-                                # except:
-                                #     logger.error(
-                                #         f"unable to convert {field_key}={field_value} - {message}"
-                                #     )
+                                    try:
+                                        single_event[f".Vendor.{field_key}"] = str(
+                                            field_value
+                                        )
+                                    except ValueError:
+                                        logger.error(
+                                            f"ValueError: {field_key}={field_value} - {message}"
+                                        )
                             self.post_message(single_event)
                         else:
                             logger.debug(record)

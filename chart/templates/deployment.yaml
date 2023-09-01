@@ -63,7 +63,7 @@ spec:
           - name: SEGWAY_SOURCE_PRODUCT
             value: {{ .Values.config.data.product }}
           - name: SEGWAY_APP_PARSER
-            value:  {{ .Values.config.data.appparser | default "default" lower }}
+            value:  {{ .Values.config.data.appparser | default "azure" lower }}
 
           # livenessProbe:
           #   httpGet:

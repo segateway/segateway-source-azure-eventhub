@@ -174,8 +174,6 @@ class LogSourcePlugin(LogSource):
                                 if field_key not in ("time"):
                                     single_event[f".Vendor.{field_key}"] = field_value
                             self.post_message(single_event)
-
-                            self.post_message(single_event)
                         else:
                             logger.debug(record)
                 else:

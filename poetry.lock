@@ -208,6 +208,14 @@ test = ["pytest (>=6.2.0)", "pytest-benchmark", "pytest-cov", "pytest-xdist", "p
 test-randomorder = ["pytest-randomly"]
 
 [[package]]
+name = "flatdict"
+version = "4.0.1"
+description = "Python module for interacting with nested dicts as a single level dict with delimited keys."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "frozenlist"
 version = "1.4.0"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -524,7 +532,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "53bbaa25b5e68222f447e2038430966ccbd7b9e72fbf43585fa2848fe036b64f"
+content-hash = "5f11597e9a647986e2fc7a7e0d77d7bd5ca2ea3a2fd74f61e8e12e9c2ab90abc"
 
 [metadata.files]
 aiohttp = []
@@ -543,6 +551,7 @@ charset-normalizer = []
 click = []
 colorama = []
 cryptography = []
+flatdict = []
 frozenlist = []
 idna = []
 isodate = []

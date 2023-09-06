@@ -63,7 +63,7 @@ spec:
           - name: SEGWAY_SOURCE_PRODUCT
             value: {{ .Values.config.data.product }}
           - name: SEGWAY_APP_PARSER
-            value:  {{ .Values.config.data.appparser }}
+            value:  {{ .Values.config.data.appparser | default "azure" | lower }}
 
           # livenessProbe:
           #   httpGet:
@@ -95,16 +95,16 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       topologySpreadConstraints:
-        - maxSkew: 1
-          topologyKey: topology.kubernetes.io/zone
-          whenUnsatisfiable: DoNotSchedule
-          matchLabelKeys:
-            - pod-template-hash
-        - maxSkew: 1
-          topologyKey: kubernetes.io/hostname
-          whenUnsatisfiable: ScheduleAnyway
-          matchLabelKeys:
-            - pod-template-hash
+        # - maxSkew: 1
+        #   topologyKey: topology.kubernetes.io/zone
+        #   whenUnsatisfiable: DoNotSchedule
+        #   matchLabelKeys:
+        #     - pod-template-hash
+        # - maxSkew: 1
+        #   topologyKey: kubernetes.io/hostname
+        #   whenUnsatisfiable: ScheduleAnyway
+        #   matchLabelKeys:
+        #     - pod-template-hash
       {{- with .Values.topologySpreadConstraints }}
         {{- toYaml . | nindent 8 }}
       {{- end }}

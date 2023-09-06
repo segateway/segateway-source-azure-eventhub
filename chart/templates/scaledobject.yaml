@@ -6,16 +6,17 @@ metadata:
   labels:
     {{- include "segway-sys-source-ms-azure-eventhub.labels" . | nindent 4 }}
   annotations:
-    scaledobject.keda.sh/transfer-hpa-ownership: "true" 
+    scaledobject.keda.sh/transfer-hpa-ownership: "true"
 spec:
   scaleTargetRef:
     name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}                # Mandatory. Must be in the same namespace as the ScaledObject
   pollingInterval:  60                                      # Optional. Default: 30 seconds
   cooldownPeriod:   300                                     # Optional. Default: 300 seconds
+  minReplicaCount:  {{ .Values.autoscaling.minReplicas }}
   maxReplicaCount:  {{ .Values.autoscaling.maxReplicas }}                                     # Optional. Default: 100
   advanced:                                                 # Optional. Section to specify advanced options
     horizontalPodAutoscalerConfig:                          # Optional. Section to specify HPA related options
-      name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }} 
+      name: {{ include "segway-sys-source-ms-azure-eventhub.fullname" . }}
       behavior:                                             # Optional. Use to modify HPA's scaling behavior
         scaleDown:
           stabilizationWindowSeconds: 300
@@ -30,16 +31,25 @@ spec:
       storageConnectionFromEnv: AZURE_STORAGE_CONN_STR
       checkpointStrategy: blobMetadata
       consumerGroup: {{ .Values.secret.data.EVENT_HUB_CONSUMER_GROUP }}
-      unprocessedEventThreshold: {{ .Values.autoscaling.unprocessedEventThreshold | default "2000" | quote }}
+      unprocessedEventThreshold: {{ .Values.autoscaling.unprocessedEventThreshold | default "64" | quote }}
       activationUnprocessedEventThreshold: {{ .Values.autoscaling.activationUnprocessedEventThreshold | default "1" | quote }}
       blobContainer:  {{ .Values.secret.data.AZURE_STORAGE_CONTAINER }}
-  {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}      
+  {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
   - type: cpu
     metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
     metadata:
       value: {{ .Values.autoscaling.targetCPUUtilizationPercentage | quote }}
-      {{- if ge (int .Capabilities.KubeVersion.Minor) 27 }}      
+      {{- if ge (int .Capabilities.KubeVersion.Minor) 27 }}
       containerName: {{ .Chart.Name }}
-      {{- end }}      
-  {{- end }}      
+      {{- end }}
+  {{- end }}
+  {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+  - type: memory
+    metricType: Utilization # Allowed types are 'Utilization' or 'AverageValue'
+    metadata:
+      value: {{ .Values.autoscaling.targetMemoryUtilizationPercentage | quote }}
+      {{- if ge (int .Capabilities.KubeVersion.Minor) 27 }}
+      containerName: {{ .Chart.Name }}
+      {{- end }}
+  {{- end }}
 {{- end }}

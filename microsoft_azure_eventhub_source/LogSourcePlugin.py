@@ -3,11 +3,14 @@ import logging
 import os
 from datetime import datetime
 
+import backoff
 import orjson
 from azure.eventhub import EventData, PartitionContext, TransportType
 from azure.eventhub.aio import EventHubConsumerClient
+from azure.eventhub.exceptions import EventHubError
 from azure.eventhub.extensions.checkpointstoreblobaio import BlobCheckpointStore
 from dotenv import load_dotenv
+from flatdict import FlatDict
 from pythonjsonlogger import jsonlogger
 
 from microsoft_azure_eventhub_source._CleanEvent import CleanEvent
@@ -47,7 +50,7 @@ class CustomJsonFormatter(jsonlogger.JsonFormatter):
 
 # logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARNING)
 
 logHandler = logging.StreamHandler()
 formatter = CustomJsonFormatter()
@@ -111,6 +114,7 @@ class LogSourcePlugin(LogSource):
         logger.info("Exit called by syslog-ng")
         self._cancelled = True
 
+    @backoff.on_exception(backoff.expo, EventHubError)
     async def run_async(self):
         """Actual start of process"""
 
@@ -129,16 +133,15 @@ class LogSourcePlugin(LogSource):
         )
         logger.info("client connected")
         async with client:
-            while not self._cancelled:
-                logger.info("waiting on batch")
-                await client.receive_batch(
-                    on_event_batch=self.on_event_batch,
-                    max_wait_time=10,
-                    starting_position="-1",  # "-1" is from the beginning of the partition.
-                    track_last_enqueued_event_properties=True,
-                )
-            logger.info("ehs: run will sleep")
-            await asyncio.sleep(1)
+            logger.info("waiting on batch")
+            await client.receive_batch(
+                on_event_batch=self.on_event_batch,
+                max_wait_time=1,
+                starting_position="-1",  # "-1" is from the beginning of the partition.
+                max_batch_size=300,
+                prefetch=1000,
+                track_last_enqueued_event_properties=True,
+            )
 
     async def on_event_batch(
         self, partition_context: PartitionContext, event_batch: EventData
@@ -156,11 +159,28 @@ class LogSourcePlugin(LogSource):
                         CleanEvent(record)
                         message = orjson.dumps(record)
                         if syslogng:
-                            record_lmsg = LogMessage(message)
-                            record_lmsg[
+                            single_event = LogMessage(message)
+                            if "time" in record:
+                                event_time = datetime.fromisoformat(record["time"])
+                            else:
+                                event_time = event.enqueued_time
+                            single_event.set_timestamp(event_time)
+                            single_event[
                                 ".internal.enqueued_time"
                             ] = event.enqueued_time.isoformat()
-                            self.post_message(record_lmsg)
+                            for field_key, field_value in FlatDict(
+                                record, delimiter="."
+                            ).items():
+                                if field_key not in ("time"):
+                                    try:
+                                        single_event[f".Vendor.{field_key}"] = str(
+                                            field_value
+                                        )
+                                    except ValueError:
+                                        logger.error(
+                                            f"ValueError: {field_key}={field_value} - {message}"
+                                        )
+                            self.post_message(single_event)
                         else:
                             logger.debug(record)
                 else:
@@ -171,10 +191,11 @@ class LogSourcePlugin(LogSource):
                         self.post_message(record_lmsg)
                     else:
                         logger.debug(event_obj)
+
         except Exception as argument:
             logger.exception(argument)
-        # exit(0)
-        await partition_context.update_checkpoint()
+        if len(event_batch) > 0:
+            await partition_context.update_checkpoint()
 
 
 def main():

@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import os
+import time
 from datetime import datetime
 
 import backoff
@@ -90,6 +91,8 @@ class LogSourcePlugin(LogSource):
     """Provides a syslog-ng async source for Mimecast"""
 
     _cancelled: bool = False
+    _partition_last_checkpoint_time = dict()
+    _checkpoint_time_interval = 30
 
     def init(self, options):
         """Syslog NG doesn't use the python init so any one time setup is done here"""
@@ -191,11 +194,19 @@ class LogSourcePlugin(LogSource):
                         self.post_message(record_lmsg)
                     else:
                         logger.debug(event_obj)
+                p_id = partition_context.partition_id
+                now_time = time.time()
+                last_checkpoint_time = self._partition_last_checkpoint_time.get(p_id)
+                if (
+                    last_checkpoint_time is None
+                    or (now_time - last_checkpoint_time)
+                    >= self._checkpoint_time_interval
+                ):
+                    await partition_context.update_checkpoint(event)
+                    self._partition_last_checkpoint_time[p_id] = now_time
 
         except Exception as argument:
             logger.exception(argument)
-        if len(event_batch) > 0:
-            await partition_context.update_checkpoint()
 
 
 def main():

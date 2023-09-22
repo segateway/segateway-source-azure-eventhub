@@ -139,10 +139,10 @@ class LogSourcePlugin(LogSource):
             logger.info("waiting on batch")
             await client.receive_batch(
                 on_event_batch=self.on_event_batch,
-                max_wait_time=1,
+                max_wait_time=15,
                 starting_position="-1",  # "-1" is from the beginning of the partition.
-                max_batch_size=300,
-                prefetch=1000,
+                max_batch_size=1000,
+                prefetch=2000,
                 track_last_enqueued_event_properties=True,
             )
 

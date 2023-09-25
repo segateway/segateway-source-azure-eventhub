@@ -19,12 +19,13 @@ def CleanEvent(source_dict: dict):
             if value.endswith("\n"):
                 value = value.strip("\n")
 
-            try:
-                value = orjson.loads(value)
-                CleanEvent(value)
-                source_dict[key] = value
-            except orjson.JSONDecodeError:
-                pass
+            if value.startswith('{"') or value.startswith("[{"):
+                try:
+                    value = orjson.loads(value)
+                    CleanEvent(value)
+                    source_dict[key] = value
+                except orjson.JSONDecodeError:
+                    pass
         elif isinstance(value, dict) and not value:
             del source_dict[key]
         elif isinstance(value, dict):

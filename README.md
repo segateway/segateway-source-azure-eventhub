@@ -9,5 +9,4 @@ docker run --name segway-az --rm -it \
     -e LOGSCALE_PS_TOKEN=$LOGSCALE_PS_TOKEN  \
     -e SYSLOG_ROUTER_SERVICE_NAME=172.16.5.4 \
     segway-az -det
-
 ```

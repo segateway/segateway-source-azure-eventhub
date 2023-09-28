@@ -23,6 +23,8 @@ def CleanEvent(source_dict: dict):
                 value = orjson.loads(value)
                 CleanEvent(value)
                 source_dict[key] = value
+            except AttributeError:
+                pass
             except orjson.JSONDecodeError:
                 pass
         elif isinstance(value, dict) and not value:

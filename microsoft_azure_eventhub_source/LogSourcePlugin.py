@@ -167,7 +167,10 @@ class LogSourcePlugin(LogSource):
                                 try:
                                     event_time = datetime.fromisoformat(record["time"])
                                 except ValueError:
-                                    event_time = datetime.strptime(record["time"], "%m/%d/%Y %I:%M:%S %p")
+                                    try:
+                                        event_time = datetime.strptime(record["time"], "%m/%d/%Y %I:%M:%S %p")
+                                    except ValueError:
+                                        event_time = event_time = event.enqueued_time
                             else:
                                 event_time = event.enqueued_time
                             single_event.set_timestamp(event_time)

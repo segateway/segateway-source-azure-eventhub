@@ -86,7 +86,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: "recursive"
-      - uses: azure/setup-helm@v3
+      - uses: azure/setup-helm@v4
 
       # - name: Lint Azure
       #   run: |
@@ -126,7 +126,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - uses: azure/setup-helm@v3
+      - uses: azure/setup-helm@v4
       - name: Build and push
         uses: docker/build-push-action@v5
         with:

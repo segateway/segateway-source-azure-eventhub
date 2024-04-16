@@ -10,3 +10,4 @@ docker run --name segway-az --rm -it \
     -e SYSLOG_ROUTER_SERVICE_NAME=172.16.5.4 \
     segway-az -det
 ```
+

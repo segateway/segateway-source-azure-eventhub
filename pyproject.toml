@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-azure-identity = "^1.13.0"
+azure-identity = "^1.16.1"
 azure-eventhub = "^5.11.3"
 azure-eventhub-checkpointstoreblob-aio = "^1.1.4"
 orjson = "^3.9.15"
